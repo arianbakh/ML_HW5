@@ -36,6 +36,10 @@ def _init_center_points(points):
     return points[np.random.choice(points.shape[0], K, replace=False), :]
 
 
+def _get_empty_r():
+    return np.zeros((NUMBER_OF_POINTS, K))
+
+
 def _calc_r(points, center_points):
     r = np.zeros((NUMBER_OF_POINTS, K))
     for n, point in enumerate(points):
@@ -88,8 +92,13 @@ def _save_output_image(points, center_points, r):
 def run():
     points = _get_random_points()
     center_points = _init_center_points(points)
+    r = _get_empty_r()
     for i in range(MAX_EPOCHS):
+        previous_r = r
         r = _calc_r(points, center_points)
+        if np.allclose(previous_r, r):
+            print('Converged in %d epochs.' % i)
+            break
         center_points = _calc_center_points(points, r)
     _save_output_image(points, center_points, r)
 
